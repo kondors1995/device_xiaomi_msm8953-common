@@ -33,6 +33,12 @@
             android:name=".DozeSettings"
             android:label="@string/ambient_display_title"
             android:theme="@android:style/Theme.DeviceDefault.Settings">
+        <intent-filter>
+                 <action android:name="com.android.settings.action.EXTRA_SETTINGS" />
+             </intent-filter>
+             <meta-data
+                android:name="com.android.settings.category"
+                android:value="com.android.settings.category.ia.display" />
         </activity>
 
     </application>
