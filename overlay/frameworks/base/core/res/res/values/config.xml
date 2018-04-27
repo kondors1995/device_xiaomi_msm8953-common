@@ -339,8 +339,10 @@
   <bool name="config_multiColorBatteryLed">true</bool>
   <!-- Does the battery LED support multiple colors? -->
   <bool name="config_multiColorNotificationLed">true</bool>
-	<!-- Do the battery/notification LEDs support pulsing?
-        Used to decide if we show pulse settings -->
-	<bool name="config_ledCanPulse">true</bool>
+  <!-- Do the battery/notification LEDs support pulsing?
+   Used to decide if we show pulse settings -->
+  <bool name="config_ledCanPulse">true</bool>
+  <!-- Whether device has button lights support -->
+  <bool name="config_button_brightness_support">true</bool>
   
 </resources>
