@@ -50,5 +50,13 @@ public class Startup extends BroadcastReceiver {
         VibratorStrengthPreference.restore(context);
         WhiteTorchBrightnessPreference.restore(context);
         YellowTorchBrightnessPreference.restore(context);
+        KcalRGBRedPreference.restore(context);
+        KcalRGBGreenPreference.restore(context);
+        KcalRGBBluePreference.restore(context);
+        KcalRGBMinPreference.restore(context);
+        KcalSatIntensityPreference.restore(context);
+        KcalScreenHuePreference.restore(context);
+        KcalScreenValuePreference.restore(context);
+        KcalScreenContrPreference.restore(context);
     }
 }

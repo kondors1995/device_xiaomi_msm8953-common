@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Button;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -41,8 +42,12 @@ public class YellowTorchBrightnessPreference extends SeekBarDialogPreference imp
     private int mMaxValue;
     private float offset;
     private TextView mValueText;
+    private Button mPlusOneButton;
+    private Button mMinusOneButton;
+    private Button mRestoreDefaultButton;
 
     private static final String FILE_BRIGHTNESS = "/sys/devices/soc/qpnp-flash-led-25/leds/led:torch_1/max_brightness";
+    private static final int DEFAULT_VALUE = 200;
 
     public YellowTorchBrightnessPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -69,6 +74,33 @@ public class YellowTorchBrightnessPreference extends SeekBarDialogPreference imp
         mValueText = (TextView) view.findViewById(R.id.current_value);
         mValueText.setText(Integer.toString(Math.round(mOldBrightness / offset)) + "%");
         mSeekBar.setOnSeekBarChangeListener(this);
+        mPlusOneButton = (Button) view.findViewById(R.id.plus_one);
+        mPlusOneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.plus_one) {
+                    singleStepPlus();
+                }
+            }
+        });
+        mMinusOneButton = (Button) view.findViewById(R.id.minus_one);
+        mMinusOneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.minus_one) {
+                    singleStepMinus();
+                }
+            }
+        });
+        mRestoreDefaultButton = (Button) view.findViewById(R.id.restore_default);
+        mRestoreDefaultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.restore_default) {
+                    restoreDefault();
+                }
+            }
+        });
     }
 
     public static boolean isSupported() {
@@ -123,6 +155,24 @@ public class YellowTorchBrightnessPreference extends SeekBarDialogPreference imp
 
     private void restoreOldState() {
         setValue(String.valueOf(mOldBrightness));
+    }
+
+    private void singleStepPlus() {
+        int currentValue = mSeekBar.getProgress();
+        if (currentValue < mMaxValue) {
+            mSeekBar.setProgress(currentValue + 1);        
+        }
+    }
+
+    private void singleStepMinus() {
+        int currentValue = mSeekBar.getProgress();
+        if (currentValue > mMinValue) {
+            mSeekBar.setProgress(currentValue - 1);
+        }
+    }
+
+    private void restoreDefault() {
+        mSeekBar.setProgress(DEFAULT_VALUE);
     }
 }
 

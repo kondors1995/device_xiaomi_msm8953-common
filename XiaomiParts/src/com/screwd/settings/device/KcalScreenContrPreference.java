@@ -1,20 +1,3 @@
-/*
-* Copyright (C) 2016 The OmniROM Project
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*
-*/
 package com.screwd.settings.device;
 
 import android.content.ContentResolver;
@@ -30,39 +13,30 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.os.Bundle;
 import android.util.Log;
-import android.os.Vibrator;
 
 import java.util.List;
 
-public class VibratorStrengthPreference extends SeekBarDialogPreference implements
+public class KcalScreenContrPreference extends SeekBarDialogPreference implements
         SeekBar.OnSeekBarChangeListener {
 
     private SeekBar mSeekBar;
     private int mOldStrength;
     private int mMinValue;
     private int mMaxValue;
-    private float offset;
-    private Vibrator mVibrator;
     private TextView mValueText;
     private Button mPlusOneButton;
     private Button mMinusOneButton;
     private Button mRestoreDefaultButton;
+    
+    private static final int OFFSET = 128;
+    private static final String FILE_LEVEL = "/sys/devices/platform/kcal_ctrl.0/kcal_cont";
+    private static final String DEFAULT_VALUE = "127";
 
-    private static final String FILE_LEVEL = "/sys/class/timed_output/vibrator/vtg_level";
-    private static final long testVibrationPattern[] = {0,250};
-    private static final int DEFAULT_VALUE = 2000;
-
-    public VibratorStrengthPreference(Context context, AttributeSet attrs) {
+    public KcalScreenContrPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // from drivers/platform/msm/qpnp-haptic.c
-        // #define QPNP_HAP_VMAX_MIN_MV		116
-        // #define QPNP_HAP_VMAX_MAX_MV		3596
-        mMinValue = 116;
-        mMaxValue = 3596;
-        offset = mMaxValue / 100f;
-
-        mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        setDialogLayoutResource(R.layout.preference_dialog_vibrator_strength);
+        mMinValue = 0;
+        mMaxValue = 255;
+        setDialogLayoutResource(R.layout.preference_dialog_kcal);
     }
 
     @Override
@@ -79,7 +53,7 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
         mSeekBar.setMax(mMaxValue - mMinValue);
         mSeekBar.setProgress(mOldStrength - mMinValue);
         mValueText = (TextView) view.findViewById(R.id.current_value);
-        mValueText.setText(Integer.toString(Math.round(mOldStrength / offset)) + "%");
+        mValueText.setText(String.valueOf(mOldStrength));
         mSeekBar.setOnSeekBarChangeListener(this);
         mPlusOneButton = (Button) view.findViewById(R.id.plus_one);
         mPlusOneButton.setOnClickListener(new View.OnClickListener() {
@@ -115,11 +89,13 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
     }
 
     public static String getValue(Context context) {
-        return Utils.getFileValue(FILE_LEVEL, "2700");
+        int value = Integer.parseInt(Utils.getFileValue(FILE_LEVEL, DEFAULT_VALUE));
+        return String.valueOf(translate(value, true));
     }
 
     private void setValue(String newValue) {
-        Utils.writeValue(FILE_LEVEL, newValue);
+        String value = String.valueOf(translate(Integer.parseInt(newValue), false));
+        Utils.writeValue(FILE_LEVEL, value);
     }
 
     public static void restore(Context context) {
@@ -127,14 +103,16 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
             return;
         }
 
-        String storedValue = PreferenceManager.getDefaultSharedPreferences(context).getString(DeviceSettings.KEY_VIBSTRENGTH, "2700"); 
-        Utils.writeValue(FILE_LEVEL, storedValue);
+        String storedValue = PreferenceManager.getDefaultSharedPreferences(context).getString(DeviceSettings.KEY_KCAL_SCR_CONTR, DEFAULT_VALUE);
+        String value = String.valueOf(translate(Integer.parseInt(storedValue), false));
+        Utils.writeValue(FILE_LEVEL, value);
     }
 
     public void onProgressChanged(SeekBar seekBar, int progress,
             boolean fromTouch) {
-        setValue(String.valueOf(progress + mMinValue));
-        mValueText.setText(Integer.toString(Math.round((progress + mMinValue) / offset)) + "%");
+        String value = String.valueOf(progress + mMinValue);
+        setValue(value);
+        mValueText.setText(value);
     }
 
     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -142,8 +120,7 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
     }
 
     public void onStopTrackingTouch(SeekBar seekBar) {
-        if (mVibrator.hasVibrator())
-            mVibrator.vibrate(testVibrationPattern, -1);
+        // NA
     }
 
     @Override
@@ -154,16 +131,22 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
             final int value = mSeekBar.getProgress() + mMinValue;
             setValue(String.valueOf(value));
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
-            editor.putString(DeviceSettings.KEY_VIBSTRENGTH, String.valueOf(value));
+            editor.putString(DeviceSettings.KEY_KCAL_SCR_CONTR, String.valueOf(value));
             editor.commit();
         } else {
             restoreOldState();
         }
-        mVibrator.cancel();
     }
 
     private void restoreOldState() {
         setValue(String.valueOf(mOldStrength));
+    }
+
+    private static int translate(int value, boolean read) {
+        if (!read)
+            return value + OFFSET;
+        else
+            return value - OFFSET;
     }
 
     private void singleStepPlus() {
@@ -181,7 +164,8 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
     }
 
     private void restoreDefault() {
-        mSeekBar.setProgress(DEFAULT_VALUE);
+        int defaultValue = Integer.parseInt(DEFAULT_VALUE);
+        mSeekBar.setProgress(defaultValue);
     }
 }
 
