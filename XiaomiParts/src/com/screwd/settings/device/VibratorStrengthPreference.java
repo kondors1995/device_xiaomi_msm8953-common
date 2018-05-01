@@ -50,7 +50,7 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
 
     private static final String FILE_LEVEL = "/sys/class/timed_output/vibrator/vtg_level";
     private static final long testVibrationPattern[] = {0,250};
-    private static final int DEFAULT_VALUE = 2000;
+    private static final int DEFAULT_VALUE = 2700;
 
     public VibratorStrengthPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -115,7 +115,7 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
     }
 
     public static String getValue(Context context) {
-        return Utils.getFileValue(FILE_LEVEL, "2700");
+        return Utils.getFileValue(FILE_LEVEL, String.valueOf(DEFAULT_VALUE));
     }
 
     private void setValue(String newValue) {
@@ -127,7 +127,7 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
             return;
         }
 
-        String storedValue = PreferenceManager.getDefaultSharedPreferences(context).getString(DeviceSettings.KEY_VIBSTRENGTH, "2700"); 
+        String storedValue = PreferenceManager.getDefaultSharedPreferences(context).getString(DeviceSettings.KEY_VIBSTRENGTH, String.valueOf(DEFAULT_VALUE)); 
         Utils.writeValue(FILE_LEVEL, storedValue);
     }
 
@@ -169,14 +169,14 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
     private void singleStepPlus() {
         int currentValue = mSeekBar.getProgress();
         if (currentValue < mMaxValue) {
-            mSeekBar.setProgress(currentValue + 1);        
+            mSeekBar.setProgress(currentValue + Math.round(offset));        
         }
     }
 
     private void singleStepMinus() {
         int currentValue = mSeekBar.getProgress();
         if (currentValue > mMinValue) {
-            mSeekBar.setProgress(currentValue - 1);
+            mSeekBar.setProgress(currentValue - Math.round(offset));
         }
     }
 

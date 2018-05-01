@@ -160,14 +160,14 @@ public class YellowTorchBrightnessPreference extends SeekBarDialogPreference imp
     private void singleStepPlus() {
         int currentValue = mSeekBar.getProgress();
         if (currentValue < mMaxValue) {
-            mSeekBar.setProgress(currentValue + 1);        
+            mSeekBar.setProgress(currentValue + Math.round(offset));        
         }
     }
 
     private void singleStepMinus() {
         int currentValue = mSeekBar.getProgress();
         if (currentValue > mMinValue) {
-            mSeekBar.setProgress(currentValue - 1);
+            mSeekBar.setProgress(currentValue - Math.round(offset));
         }
     }
 
