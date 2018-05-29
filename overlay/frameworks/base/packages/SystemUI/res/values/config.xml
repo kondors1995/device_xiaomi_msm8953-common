@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
-<<<<<<< HEAD
-** Copyright 2015, The Android Open Source Project
-=======
 ** Copyright 2009, The Android Open Source Project
->>>>>>> 34e8d1b... msm8953-common: xiaomidoze: import from gemini
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -44,6 +40,4 @@
     <!-- Doze: pulse parameter - delay to wait for the screen to wake up after an intent -->
     <integer name="doze_pulse_delay_in_intent">0</integer>
 	 
- 
- 
 </resources>
