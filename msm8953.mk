@@ -386,7 +386,8 @@ PRODUCT_COPY_FILES += \
 # Extras
 PRODUCT_PACKAGES += \
     XiaomiParts \
-    Recorder
+    Recorder \
+    Eleven
 
 
 # Google Lens
