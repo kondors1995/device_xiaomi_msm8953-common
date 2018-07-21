@@ -45,8 +45,8 @@ public class Startup extends BroadcastReceiver {
 
   @Override
     public void onReceive(final Context context, final Intent bootintent) {
-      if(bootintent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Boolean shouldRestore = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, false); 
+      if(bootintent.getAction().equals("android.intent.action.BOOT_COMPLETED") && shouldRestore) {
 
         VibratorStrengthPreference.restore(context);
         WhiteTorchBrightnessPreference.restore(context);

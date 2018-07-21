@@ -27,6 +27,9 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
+import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
+import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -50,11 +53,12 @@ public class DeviceSettings extends PreferenceActivity implements
     public static final String KEY_KCAL_SCR_CONTR = "key_kcal_scr_contr";
     public static final String KEY_KCAL_SCR_VAL = "key_kcal_scr_val";
     public static final String KEY_KCAL_SCR_HUE = "key_kcal_scr_hue";
-
+    public static final String KEY_RESTORE_ON_BOOT = "restore_on_boot";
 
     private VibratorStrengthPreference mVibratorStrength;
     private YellowTorchBrightnessPreference mYellowTorchBrightness;
     private WhiteTorchBrightnessPreference mWhiteTorchBrightness;
+    private SwitchPreference restoreOnBootPreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +81,11 @@ public class DeviceSettings extends PreferenceActivity implements
         if (mWhiteTorchBrightness != null) {
             mWhiteTorchBrightness.setEnabled(WhiteTorchBrightnessPreference.isSupported());
         }
+
+        restoreOnBootPreference = (SwitchPreference) findPreference(KEY_RESTORE_ON_BOOT);
+        Boolean shouldRestore = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, false); 
+        restoreOnBootPreference.setChecked(shouldRestore);
+        restoreOnBootPreference.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -98,6 +107,21 @@ public class DeviceSettings extends PreferenceActivity implements
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+        if (preference == restoreOnBootPreference) {
+          if (restoreOnBootPreference.isChecked()) {
+          
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+            editor.putBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, true);
+            editor.commit();
+          
+          } else {
+          
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+            editor.putBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, false);
+            editor.commit();
+          }
+        }
         return true;
     }
 }

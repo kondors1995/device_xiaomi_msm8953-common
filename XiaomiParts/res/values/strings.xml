@@ -37,4 +37,5 @@
     <string name="plus_one">+1</string>
     <string name="minus_one">-1</string>
     <string name="restore_default">Default</string>
+    <string name="restore_on_boot">Restore settings after boot</string>
 </resources>
