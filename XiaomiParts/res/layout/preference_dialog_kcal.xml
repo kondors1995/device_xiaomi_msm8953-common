@@ -51,7 +51,7 @@
                 
         </RelativeLayout>
 
-        <SeekBar android:id="@*android:id/seekbar"
+        <SeekBar android:id="@+id/kcalSeekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dip" />

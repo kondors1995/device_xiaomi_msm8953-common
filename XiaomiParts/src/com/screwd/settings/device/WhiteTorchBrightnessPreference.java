@@ -68,7 +68,7 @@ public class WhiteTorchBrightnessPreference extends SeekBarDialogPreference impl
         super.onBindDialogView(view);
 
         mOldBrightness = Integer.parseInt(getValue(getContext()));
-        mSeekBar = getSeekBar(view);
+        mSeekBar = (SeekBar) view.findViewById(R.id.torchSeekBar);
         mSeekBar.setMax(mMaxValue - mMinValue);
         mSeekBar.setProgress(mOldBrightness - mMinValue);
         mValueText = (TextView) view.findViewById(R.id.current_value);

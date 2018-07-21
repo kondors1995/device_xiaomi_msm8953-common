@@ -34,6 +34,8 @@ import android.os.Vibrator;
 
 import java.util.List;
 
+import com.screwd.settings.device.R;
+
 public class VibratorStrengthPreference extends SeekBarDialogPreference implements
         SeekBar.OnSeekBarChangeListener {
 
@@ -75,7 +77,7 @@ public class VibratorStrengthPreference extends SeekBarDialogPreference implemen
         super.onBindDialogView(view);
 
         mOldStrength = Integer.parseInt(getValue(getContext()));
-        mSeekBar = getSeekBar(view);
+        mSeekBar = (SeekBar) view.findViewById(R.id.vibratorSeekBar);
         mSeekBar.setMax(mMaxValue - mMinValue);
         mSeekBar.setProgress(mOldStrength - mMinValue);
         mValueText = (TextView) view.findViewById(R.id.current_value);

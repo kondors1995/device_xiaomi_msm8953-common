@@ -49,7 +49,7 @@ public class KcalScreenContrPreference extends SeekBarDialogPreference implement
         super.onBindDialogView(view);
 
         mOldStrength = Integer.parseInt(getValue(getContext()));
-        mSeekBar = getSeekBar(view);
+        mSeekBar = (SeekBar) view.findViewById(R.id.kcalSeekBar);
         mSeekBar.setMax(mMaxValue - mMinValue);
         mSeekBar.setProgress(mOldStrength - mMinValue);
         mValueText = (TextView) view.findViewById(R.id.current_value);

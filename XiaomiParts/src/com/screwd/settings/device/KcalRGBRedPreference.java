@@ -52,7 +52,7 @@ public class KcalRGBRedPreference extends SeekBarDialogPreference implements
         String value = getValue(getContext());
         String[] rgb = getIndividualRGB(value); 
         mOldStrength = Integer.parseInt(rgb[0]);
-        mSeekBar = getSeekBar(view);
+        mSeekBar = (SeekBar) view.findViewById(R.id.kcalSeekBar);
         mSeekBar.setMax(mMaxValue - mMinValue);
         mSeekBar.setProgress(mOldStrength - mMinValue);
         mValueText = (TextView) view.findViewById(R.id.current_value);
