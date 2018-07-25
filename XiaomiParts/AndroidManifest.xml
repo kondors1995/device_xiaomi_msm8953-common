@@ -25,10 +25,19 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <receiver android:name="com.screwd.settings.device.Startup" >
-            <intent-filter android:priority="100" >
+        <receiver android:name="com.screwd.settings.device.Startup"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="100">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <service
+            android:name="com.screwd.settings.device.RestoreService"
+						android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+				</service>
     </application>
 </manifest>

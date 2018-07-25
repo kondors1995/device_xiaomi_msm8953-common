@@ -29,6 +29,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.preference.ListPreference;
 import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -54,11 +55,13 @@ public class DeviceSettings extends PreferenceActivity implements
     public static final String KEY_KCAL_SCR_VAL = "key_kcal_scr_val";
     public static final String KEY_KCAL_SCR_HUE = "key_kcal_scr_hue";
     public static final String KEY_RESTORE_ON_BOOT = "restore_on_boot";
+    public static final String KEY_RESTORE_DELAY = "delay_list";
 
     private VibratorStrengthPreference mVibratorStrength;
     private YellowTorchBrightnessPreference mYellowTorchBrightness;
     private WhiteTorchBrightnessPreference mWhiteTorchBrightness;
     private SwitchPreference restoreOnBootPreference;
+    private ListPreference restoreDelayPreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,28 @@ public class DeviceSettings extends PreferenceActivity implements
         Boolean shouldRestore = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, false); 
         restoreOnBootPreference.setChecked(shouldRestore);
         restoreOnBootPreference.setOnPreferenceChangeListener(this);
+
+        restoreDelayPreference = (ListPreference) findPreference(KEY_RESTORE_DELAY);
+        int restoreDelay = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(DeviceSettings.KEY_RESTORE_DELAY, "5"));
+        switch (restoreDelay) {
+          case 0:
+            restoreDelayPreference.setValueIndex(0);
+            break;
+          case 3:
+            restoreDelayPreference.setValueIndex(1);
+            break;
+          case 5:
+            restoreDelayPreference.setValueIndex(2);
+            break;
+          case 10:
+            restoreDelayPreference.setValueIndex(3);
+            break;
+          default:
+            restoreDelayPreference.setValueIndex(2);
+            break;
+        }
+        restoreDelayPreference.setOnPreferenceChangeListener(this);
+
     }
 
     @Override
@@ -109,18 +134,16 @@ public class DeviceSettings extends PreferenceActivity implements
     public boolean onPreferenceChange(Preference preference, Object newValue) {
 
         if (preference == restoreOnBootPreference) {
-          if (restoreOnBootPreference.isChecked()) {
-          
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-            editor.putBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, true);
+            boolean value = (Boolean) newValue;
+            editor.putBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, value);
             editor.commit();
-          
-          } else {
-          
+        }  
+        else if (preference == restoreDelayPreference) {
+            String delay = newValue.toString();
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-            editor.putBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, false);
+            editor.putString(DeviceSettings.KEY_RESTORE_DELAY, delay);
             editor.commit();
-          }
         }
         return true;
     }

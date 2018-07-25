@@ -24,41 +24,31 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.os.Handler;
+import java.lang.Runnable;
+import android.util.Log;
+
 
 public class Startup extends BroadcastReceiver {
 
-  private void restore(String file, boolean enabled) {
-    if (file == null) {
-      return;
-    }
-    if (enabled) {
-      Utils.writeValue(file, "1");
-    }
-  }
-
-  private void restore(String file, String value) {
-    if (file == null) {
-      return;
-    }
-    Utils.writeValue(file, value);
-  }
-
+  private static final String TAG = "XiaomiParts";
+  
   @Override
     public void onReceive(final Context context, final Intent bootintent) {
+     
         Boolean shouldRestore = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(DeviceSettings.KEY_RESTORE_ON_BOOT, false); 
-      if(bootintent.getAction().equals("android.intent.action.BOOT_COMPLETED") && shouldRestore) {
-
-        VibratorStrengthPreference.restore(context);
-        WhiteTorchBrightnessPreference.restore(context);
-        YellowTorchBrightnessPreference.restore(context);
-        
-        KcalRGBMinPreference.restore(context);
-        KcalSatIntensityPreference.restore(context);
-        KcalScreenHuePreference.restore(context);
-        KcalScreenValuePreference.restore(context);
-        KcalScreenContrPreference.restore(context);
-
-        KcalUtils.restoreRGBAfterBoot(context);
-      }
+        Log.e(TAG, Boolean.toString(shouldRestore));
+        if(bootintent.getAction().equals("android.intent.action.BOOT_COMPLETED") && shouldRestore) {
+		        String s = PreferenceManager.getDefaultSharedPreferences(context).getString(DeviceSettings.KEY_RESTORE_DELAY, "5");
+            Log.e(TAG, s);
+            int delay = Integer.valueOf(s);
+            new Handler().postDelayed(new Runnable() {
+            @Override
+              public void run() {
+                Intent in = new Intent(context, RestoreService.class);
+                context.startService(in);
+              }
+           }, delay * 1000);
+        } 
     }
 }
