@@ -233,6 +233,14 @@ on enable-eas-power
   # Disable sched boost
   write /proc/sys/kernel/sched_boost 0
 
+  # Mount and use blkio cgroup
+  mount tmpfs cgroup_root /sys/fs/cgroup mode=0750,uid=0,gid=1000
+  mkdir /sys/fs/cgroup/blkio root system
+  mount cgroup none /sys/fs/cgroup/blkio blkio
+  chown root system /sys/fs/cgroup/blkio
+  chmod 0660 /sys/fs/cgroup/blkio
+
+  setprop sys.io.scheduler "bfq"
   
 on property:sys.boot_completed=1
   trigger enable-eas-power
